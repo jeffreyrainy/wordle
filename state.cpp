@@ -41,7 +41,7 @@ State::State(int size, int letters)
     }
 
     letterRng = std::uniform_int_distribution<std::mt19937::result_type>{(unsigned int)0, (unsigned int)(Letters - 1)};
-    matches.resize(letters, grey);
+    matches.resize(Size, grey);
 }
 
 void State::tell(vector<Match> matchesFound)

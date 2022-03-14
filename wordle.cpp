@@ -50,13 +50,22 @@ int main(int argc, char* argv[])
     int size = 5;
     int letters = 26;
     int next = 0;
+    string solution;
+    vector<string> guesses;
+    bool scenario = false;
+
 
     std::random_device dev;
     std::mt19937 rng(dev());
 
     for(int i = 1; i < argc; i++)
     {
-        if (argv[i] == (string)"verbose")
+        if (argv[i] == (string)"--help")
+        {
+            cout << argv[0] << " [verbose] [-l letters] [-s size] [scenario solution guess1 guess2 ...]" << endl;
+            return 0;
+        }
+        else if (argv[i] == (string)"verbose")
         {
             verbose = true;
         }
@@ -67,6 +76,17 @@ int main(int argc, char* argv[])
         else if (argv[i] == (string)"-s")
         {
             next = 1;
+        }
+        else if (argv[i] == (string)"scenario")
+        {
+            scenario = true;
+            i++;
+            solution = argv[i++];
+
+            while(i < argc)
+            {
+                guesses.push_back(argv[i++]);
+            }
         }
         else
         {
@@ -82,40 +102,59 @@ int main(int argc, char* argv[])
         }
     }
 
+
     std::uniform_int_distribution<std::mt19937::result_type> letterRng;
     letterRng = std::uniform_int_distribution<std::mt19937::result_type>{(unsigned int)0, (unsigned int)(letters - 1)};
 
     while(true)
     {
         int moves = 0;
-        State s(size, letters);
-        string solution;
+        State* s = new State(size, letters);
         string guess;
 
         solution.resize(size);
-        for(int i = 0; i < size; i++)
-        {
-            solution[i] = letterRng(rng) + 'A';
-        }
 
-        if (verbose)
+        // if we're not playing a specific scenario, pick a random solution
+        if (!scenario)
         {
-            cout << "=====" << endl;
-            cout << solution << endl;
-            cout << "=====" << endl;
-        }
-
-        while(solution != guess)
-        {
-            guess = s.getGuess();
-            s.tell(match(guess, solution));
-
+            for(int i = 0; i < size; i++)
+            {
+                solution[i] = letterRng(rng) + 'A';
+            }
             if (verbose)
             {
-                cout << s;
+                cout << "=====" << endl;
+                cout << solution << endl;
+                cout << "=====" << endl;
             }
-            moves++;
+
+            while(solution != guess)
+            {
+                guess = s->getGuess();
+                s->tell(match(guess, solution));
+
+                if (verbose)
+                {
+                    cout << *s;
+                }
+                moves++;
+            }
         }
+        else
+        {
+            while(solution != guess)
+            {
+                guess = s->getGuess();
+                s->tell(match(guess, solution));
+
+                if (verbose)
+                {
+                    cout << *s;
+                }
+                moves++;
+            }
+        }
+
         if (verbose)
         {
             cout << moves << " guesses " << endl << endl;
