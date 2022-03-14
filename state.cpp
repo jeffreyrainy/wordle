@@ -153,7 +153,7 @@ void State::solve(vector<bool> pairings)
     solve(pairings, 0);
 }
 
-std::string State::improve()
+std::string State::getGuess()
 {
     string next;
 

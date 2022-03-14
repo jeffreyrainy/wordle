@@ -26,9 +26,9 @@ public:
     friend ostream& operator<<(ostream& out, const State& s);
 
     State(int size, int letters);
+    string getGuess();
 
     void match(string solution);
-    string improve();
 
 private:
     void solve(vector<bool> pairings);

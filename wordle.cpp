@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 
         while(solution != guess)
         {
-            guess = s.improve();
+            guess = s.getGuess();
             s.match(solution);
             if (verbose)
             {
