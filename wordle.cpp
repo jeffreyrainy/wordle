@@ -1,4 +1,5 @@
 #include "state.h"
+#include "scenariostate.h"
 
 vector<Match> match(string guess, string solution)
 {
@@ -83,9 +84,19 @@ int main(int argc, char* argv[])
             i++;
             solution = argv[i++];
 
+            for(auto& c:solution)
+            {
+                c = toupper(c);
+            }
+
             while(i < argc)
             {
-                guesses.push_back(argv[i++]);
+                string guess = argv[i++];
+                for(auto& c:guess)
+                {
+                    c = toupper(c);
+                }
+                guesses.push_back(guess);
             }
         }
         else
@@ -109,7 +120,7 @@ int main(int argc, char* argv[])
     while(true)
     {
         int moves = 0;
-        State* s = new State(size, letters);
+        State* s = scenario ? new ScenarioState(size, letters) : new State(size, letters);
         string guess;
 
         solution.resize(size);
@@ -144,6 +155,15 @@ int main(int argc, char* argv[])
         {
             while(solution != guess)
             {
+                if (moves < guesses.size())
+                {
+                    s->suggest(guesses[moves]);
+                }
+                else
+                {
+                    s->suggest("");
+                }
+
                 guess = s->getGuess();
                 s->tell(match(guess, solution));
 
@@ -167,6 +187,8 @@ int main(int argc, char* argv[])
         {
             cout << std::setprecision(8) << (double)total / count << endl;
         }
+
+        delete s;
     }
 
     return 0;

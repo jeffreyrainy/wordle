@@ -169,6 +169,8 @@ std::string State::getGuess()
     std::uniform_int_distribution<std::mt19937::result_type> moveRng(0, pairingSeen.size() - 1);
     int choice = moveRng(rng);
 
+    filterPairings();
+
     vector<int> moves = pairingSeen[choice];
 
     int j=0;
@@ -201,5 +203,8 @@ std::string State::getGuess()
     }
 
     guess = next;
+
+    filterGrey();
+
     return guess;
 }

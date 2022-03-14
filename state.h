@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <map>
 #include <array>
@@ -8,7 +10,7 @@
 #include <string>
 #include <random>
 
-using std::cout, std::map, std::array, std::vector, std::swap, std::endl, std::deque, std::ostream, std::set, std::to_string, std::string;
+using std::cout, std::map, std::array, std::vector, std::swap, std::endl, std::deque, std::ostream, std::set, std::to_string, std::string, std::toupper;
 
 constexpr const int MaxSize = 15;
 constexpr const int MaxLetters = 26;
@@ -26,10 +28,16 @@ public:
     friend ostream& operator<<(ostream& out, const State& s);
 
     State(int size, int letters);
+    virtual ~State() {};
+
     string getGuess();
     void tell(vector<Match> matches);
 
-private:
+    virtual void suggest(string) {};
+    virtual void filterPairings() {};
+    virtual void filterGrey() {};
+
+protected:
     void solve(vector<bool> pairings);
     void solve(vector<bool> pairings, int letter);
 
