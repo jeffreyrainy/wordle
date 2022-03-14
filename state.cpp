@@ -41,58 +41,41 @@ State::State(int size, int letters)
     }
 
     letterRng = std::uniform_int_distribution<std::mt19937::result_type>{(unsigned int)0, (unsigned int)(Letters - 1)};
-
+    matches.resize(letters, grey);
 }
 
-void State::match(string solution)
+void State::tell(vector<Match> matchesFound)
 {
-    map<char, int> available;
-
-    for(int i = 0; i < Size; i++)
+    matches = matchesFound;
+    set<char> yellows;
+    for(int i=0; i < Size; i++)
     {
-        matches[i] = grey;
-    }
-
-    for(int i = 0; i < Size; i++)
-    {
-        if (solution[i] == guess[i])
+        if (matches[i] == green || matches[i] == yellow)
         {
-            matches[i] = green;
-
-            for(int j = 0; j < Letters; j++)
+            placesForLetter[guess[i] - 'A'].erase(i);
+            if (matches[i] == yellow)
             {
-                placesForLetter[j].erase(i);
+                yellows.insert(guess[i]);
+            }
+            if (matches[i] == green)
+            {
+                for(int j = 0; j < Letters; j++)
+                {
+                    placesForLetter[j].erase(i);
+                }
             }
         }
         else
         {
-            available[solution[i]]++;
-        }
-    }
-    for(int i = 0; i < Size; i++)
-    {
-        if (matches[i] != green)
-        {
-            if (available.find(guess[i]) != available.end() && available[guess[i]])
+            if (yellows.find(guess[i]) == yellows.end())
             {
-                available[guess[i]]--;
-                matches[i] = yellow;
-                placesForLetter[guess[i] - 'A'].erase(i);
+                // there's no yellow of this letter, and it is grey here. So it is not present
+                placesForLetter[guess[i] - 'A'].clear();
             }
             else
             {
-                matches[i] = grey;
-
-                // if we didn't have yellow of this letter, don't ever reuse it
-                if (available.find(guess[i]) == available.end())
-                {
-                    placesForLetter[guess[i] - 'A'].clear();
-                }
-                else
-                {
-                    // otherwise, it just goes elsewhere
-                    placesForLetter[guess[i] - 'A'].erase(i);
-                }
+                // there's a yellow of this letter, but it is grey here. So it might go elsewhere
+                placesForLetter[guess[i] - 'A'].erase(i);
             }
         }
     }
@@ -218,6 +201,5 @@ std::string State::getGuess()
     }
 
     guess = next;
-
     return guess;
 }

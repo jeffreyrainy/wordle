@@ -1,5 +1,47 @@
 #include "state.h"
 
+vector<Match> match(string guess, string solution)
+{
+    vector<Match> matches;
+    matches.resize(guess.size());
+
+    map<char, int> potentialYellow;
+
+    for(auto& m: matches)
+    {
+        m = grey;
+    }
+
+    for(int i = 0; i < guess.size(); i++)
+    {
+        if (solution[i] == guess[i])
+        {
+            matches[i] = green;
+        }
+        else
+        {
+            potentialYellow[solution[i]]++; // letter we can mark as yellow elsewhere
+        }
+    }
+    for(int i = 0; i < guess.size(); i++)
+    {
+        if (matches[i] != green)
+        {
+            if (potentialYellow[guess[i]])
+            {
+                potentialYellow[guess[i]]--;
+                matches[i] = yellow;
+            }
+            else
+            {
+                matches[i] = grey;
+            }
+        }
+    }
+
+    return matches;
+}
+
 int main(int argc, char* argv[])
 {
     long total = 0;
@@ -66,7 +108,8 @@ int main(int argc, char* argv[])
         while(solution != guess)
         {
             guess = s.getGuess();
-            s.match(solution);
+            s.tell(match(guess, solution));
+
             if (verbose)
             {
                 cout << s;

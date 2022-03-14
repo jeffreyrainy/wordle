@@ -27,8 +27,7 @@ public:
 
     State(int size, int letters);
     string getGuess();
-
-    void match(string solution);
+    void tell(vector<Match> matches);
 
 private:
     void solve(vector<bool> pairings);
@@ -37,7 +36,7 @@ private:
     int Size;
     int Letters;
     string guess;
-    Match matches[MaxSize] = {grey};
+    vector<Match> matches;
     set<int> placesForLetter[MaxLetters];
     vector<int> pairing;
     vector<vector<int>> pairingSeen;
