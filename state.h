@@ -32,6 +32,7 @@ public:
     virtual ~State() {};
 
     string getGuess();
+    string getIntermediate() {return intermediate;}
     void tell(vector<Match> matches);
 
     virtual void suggest(string) {};
@@ -45,6 +46,7 @@ protected:
     int Size;
     int Letters;
     string guess;
+    string intermediate;
     vector<Match> matches;
     set<int> placesForLetter[MaxLetters];
     vector<int> pairing;

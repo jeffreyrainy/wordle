@@ -137,7 +137,7 @@ std::string State::getGuess()
 {
     string next;
 
-    next.resize(Size, ' ');
+    next.resize(Size, '.');
 
     for(int i = 0; i < Size; i++)
     {
@@ -196,10 +196,12 @@ std::string State::getGuess()
 
     next = nextsVector[choice];
 
+    intermediate = next;
+
     for(int i = 0; i < Size; i++)
     {
         // for unplaced letters
-        if (next[i] == ' ')
+        if (next[i] == '.')
         {
             // pick a letter that could still go here. (not previously yellow in this column nor grey in any columns except if other yellow present)
             vector<char> pickLetters;

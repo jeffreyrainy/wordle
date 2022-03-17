@@ -2,7 +2,7 @@
 #include "scenariostate.h"
 #include "rng.h"
 
-RNG r;
+RNG r(8693, 9749, 19471, 23767);
 
 vector<Match> match(string guess, string solution)
 {
@@ -51,6 +51,7 @@ int main(int argc, char* argv[])
     long total = 0;
     long count = 0;
     bool verbose = false;
+    bool trace = false;
     int size = 5;
     int letters = 26;
     int next = 0;
@@ -70,6 +71,10 @@ int main(int argc, char* argv[])
         else if (argv[i] == (string)"verbose")
         {
             verbose = true;
+        }
+        else if (argv[i] == (string)"trace")
+        {
+            trace = true;
         }
         else if (argv[i] == (string)"-l")
         {
@@ -129,6 +134,10 @@ int main(int argc, char* argv[])
             {
                 solution[i] = r.random(letters) + 'A';
             }
+            if (trace)
+            {
+                cout << "target " << solution << endl;
+            }
             if (verbose)
             {
                 cout << "=====" << endl;
@@ -139,6 +148,13 @@ int main(int argc, char* argv[])
             while(solution != guess)
             {
                 guess = s->getGuess();
+
+                if (trace)
+                {
+                    cout << "intermediate " << s->getIntermediate() << endl;
+                    cout << "guess " << guess << endl;
+                }
+
                 s->tell(match(guess, solution));
 
                 if (verbose)
@@ -181,6 +197,11 @@ int main(int argc, char* argv[])
         {
             cout << moves << " guesses " << endl << endl;
         }
+        if (trace)
+        {
+            cout << moves << " guesses " << endl;
+        }
+
 
         total += moves;
         count++;
