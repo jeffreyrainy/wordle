@@ -53,6 +53,8 @@ int main(int argc, char* argv[])
     int next = 0;
     string solution;
     vector<string> guesses;
+    map<string,int> firstWords;
+    map<int, int> instances;
     bool scenario = false;
 
 
@@ -167,6 +169,11 @@ int main(int argc, char* argv[])
                 guess = s->getGuess();
                 s->tell(match(guess, solution));
 
+                if (moves == guesses.size())
+                {
+                    firstWords[guess]++;
+                }
+
                 if (verbose)
                 {
                     cout << *s;
@@ -182,10 +189,24 @@ int main(int argc, char* argv[])
 
         total += moves;
         count++;
+        instances[moves]++;
 
         if (count % 10000 == 0)
         {
-            cout << std::setprecision(8) << (double)total / count << endl;
+            cout << std::setprecision(8) << (double)total / count << " (" << count << ")"<< endl;
+
+            for(auto it:instances)
+            {
+                cout << it.first << " moves: " << std::setprecision(8) << (double)it.second / count << endl;
+            }
+
+            if (scenario)
+            {
+                for(auto it:firstWords)
+                {
+                    cout << it.first << " " << (double)it.second / count << endl;
+                }
+            }
         }
 
         delete s;
