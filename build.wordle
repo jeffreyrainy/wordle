@@ -1,1 +1,1 @@
-g++ --std=c++17 wordle.cpp state.cpp scenariostate.cpp -O3 -ggdb3 --pedantic -Wall -o worlde
+g++ --std=c++17 wordle.cpp state.cpp scenariostate.cpp rng.cpp -O3 -ggdb3 --pedantic -Wall -o wordle

@@ -1,8 +1,5 @@
 #include "state.h"
 
-std::random_device dev;
-std::mt19937 rng(dev());
-
 ostream& operator<<(ostream& out, const State& s)
 {
     for(int i = 0; i < s.Size; i++)
@@ -28,7 +25,8 @@ ostream& operator<<(ostream& out, const State& s)
     return out;
 }
 
-State::State(int size, int letters)
+State::State(int size, int letters, RNG& rng)
+:rng(rng)
 {
     Size = size;
     Letters = letters;
@@ -40,7 +38,6 @@ State::State(int size, int letters)
         }
     }
 
-    letterRng = std::uniform_int_distribution<std::mt19937::result_type>{(unsigned int)0, (unsigned int)(Letters - 1)};
     matches.resize(Size, grey);
 }
 
@@ -165,22 +162,39 @@ std::string State::getGuess()
     // find a way the yellow letters could be arranged
     solve(pairings);
 
-    // pick a way
-    std::uniform_int_distribution<std::mt19937::result_type> moveRng(0, pairingSeen.size() - 1);
-    int choice = moveRng(rng);
-
     filterPairings();
 
-    vector<int> moves = pairingSeen[choice];
+    set<string> nexts;
 
-    int j=0;
-    for(int i=0; i < Size; i++)
+    for(auto pairing:pairingSeen)
     {
-        if (matches[i] == yellow)
+        string potentialNext = next;
+
+        int j=0;
+        for(int i=0; i < Size; i++)
         {
-            next[moves[j++]] = guess[i];
+            if (matches[i] == yellow)
+            {
+                potentialNext[pairing[j++]] = guess[i];
+            }
         }
+
+        nexts.insert(potentialNext);
     }
+
+    //cout << nexts.size() << " " << pairingSeen.size() << endl;
+    assert(nexts.size() == pairingSeen.size() || nexts.size() * 2 == pairingSeen.size() || nexts.size() * 4 == pairingSeen.size());
+
+    vector<string> nextsVector;
+    for(auto it:nexts)
+    {
+        nextsVector.push_back(it);
+    }
+
+    // pick a way
+    int choice = rng.random(nextsVector.size());
+
+    next = nextsVector[choice];
 
     for(int i = 0; i < Size; i++)
     {
@@ -197,8 +211,7 @@ std::string State::getGuess()
                 }
             }
 
-            std::uniform_int_distribution<std::mt19937::result_type> letterDist(0, pickLetters.size() - 1);
-            next[i] = pickLetters[letterDist(rng)];
+            next[i] = pickLetters[rng.random(pickLetters.size())];
         }
     }
 

@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <random>
+#include "rng.h"
 
 using std::cout, std::map, std::array, std::vector, std::swap, std::endl, std::deque, std::ostream, std::set, std::to_string, std::string, std::toupper;
 
@@ -27,7 +28,7 @@ class State
 public:
     friend ostream& operator<<(ostream& out, const State& s);
 
-    State(int size, int letters);
+    State(int size, int letters, RNG& rng);
     virtual ~State() {};
 
     string getGuess();
@@ -48,7 +49,7 @@ protected:
     set<int> placesForLetter[MaxLetters];
     vector<int> pairing;
     vector<vector<int>> pairingSeen;
-    std::uniform_int_distribution<std::mt19937::result_type> letterRng;
+    RNG& rng;
 };
 
 ostream& operator<<(ostream& out, const State& s);

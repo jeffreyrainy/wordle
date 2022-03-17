@@ -1,5 +1,8 @@
 #include "state.h"
 #include "scenariostate.h"
+#include "rng.h"
+
+RNG r;
 
 vector<Match> match(string guess, string solution)
 {
@@ -57,10 +60,6 @@ int main(int argc, char* argv[])
     map<int, int> instances;
     bool scenario = false;
 
-
-    std::random_device dev;
-    std::mt19937 rng(dev());
-
     for(int i = 1; i < argc; i++)
     {
         if (argv[i] == (string)"--help")
@@ -115,14 +114,10 @@ int main(int argc, char* argv[])
         }
     }
 
-
-    std::uniform_int_distribution<std::mt19937::result_type> letterRng;
-    letterRng = std::uniform_int_distribution<std::mt19937::result_type>{(unsigned int)0, (unsigned int)(letters - 1)};
-
     while(true)
     {
         int moves = 0;
-        State* s = scenario ? new ScenarioState(size, letters) : new State(size, letters);
+        State* s = scenario ? new ScenarioState(size, letters, r) : new State(size, letters, r);
         string guess;
 
         solution.resize(size);
@@ -132,7 +127,7 @@ int main(int argc, char* argv[])
         {
             for(int i = 0; i < size; i++)
             {
-                solution[i] = letterRng(rng) + 'A';
+                solution[i] = r.random(letters) + 'A';
             }
             if (verbose)
             {
@@ -197,7 +192,7 @@ int main(int argc, char* argv[])
 
             for(auto it:instances)
             {
-                cout << it.first << " moves: " << std::setprecision(8) << (double)it.second / count << endl;
+                cout << it.first << " " << std::setprecision(8) << (double)it.second / count << endl;
             }
 
             if (scenario)
