@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    while(true)
+    while(count <= 2500000)
     {
         int moves = 0;
         State* s = scenario ? new ScenarioState(size, letters, r) : new State(size, letters, r);
@@ -202,6 +202,10 @@ int main(int argc, char* argv[])
             cout << moves << " guesses " << endl;
         }
 
+        if ((count + 1) % 10000 == 0 || count < 10)
+        {
+            cout << "solution " << count << " " << solution << endl;
+        }
 
         total += moves;
         count++;
@@ -213,7 +217,7 @@ int main(int argc, char* argv[])
 
             for(auto it:instances)
             {
-                cout << it.first << " " << std::setprecision(8) << (double)it.second / count << endl;
+                cout << it.first << " guesses: " << std::setprecision(8) << it.second << endl;
             }
 
             if (scenario)
