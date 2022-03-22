@@ -104,48 +104,40 @@ int main(int argc, char* argv[])
 
         solution.resize(size);
 
-        try
+        for(int i = 0; i < size; i++)
         {
+            solution[i] = r.random(letters) + 'A';
+        }
 
-            for(int i = 0; i < size; i++)
-            {
-                solution[i] = r.random(letters) + 'A';
-            }
+        if (trace)
+        {
+            cout << "target " << solution << endl;
+        }
+
+        if (verbose)
+        {
+            cout << "=====" << endl;
+            cout << solution << endl;
+            cout << "=====" << endl;
+        }
+
+        while(solution != guess)
+        {
+            guess = s->getGuess();
 
             if (trace)
             {
-                cout << "target " << solution << endl;
+                cout << "intermediate " << s->getIntermediate() << endl;
+                cout << "guess " << guess << endl;
             }
+
+            s->tell(match(guess, solution));
 
             if (verbose)
             {
-                cout << "=====" << endl;
-                cout << solution << endl;
-                cout << "=====" << endl;
+                cout << *s;
             }
-
-            while(solution != guess)
-            {
-                guess = s->getGuess();
-
-                if (trace)
-                {
-                    cout << "intermediate " << s->getIntermediate() << endl;
-                    cout << "guess " << guess << endl;
-                }
-
-                s->tell(match(guess, solution));
-
-                if (verbose)
-                {
-                    cout << *s;
-                }
-                moves++;
-            }
-        }
-        catch(...)
-        {
-            continue;
+            moves++;
         }
 
         if (verbose)

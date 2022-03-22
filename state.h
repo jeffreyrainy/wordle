@@ -36,7 +36,7 @@ public:
     void tell(vector<Match> matches);
 
     virtual void suggest(string) {};
-    virtual void filterPairings() {};
+    void filterPairings(vector<vector<char>>& pickLetters);
     virtual void filterGrey() {};
 
 protected:

@@ -146,6 +146,44 @@ void State::solve(vector<bool> pairings)
     solve(pairings, 0);
 }
 
+void State::filterPairings(vector<vector<char>>& pickLetters)
+{
+    // for each lette rposition
+    for(int i = 0; i < Size; i++)
+    {
+        // if we have no letters other than placement for this position
+        if (pickLetters[i].size() == 0 && matches[i] != green)
+        {
+            // for each pairing
+            for(int j = 0; j < pairingSeen.size(); )
+            {
+                auto& p = pairingSeen[j];
+                bool bad = true;
+                // for each target position
+                for(auto m: p)
+                {
+                    // if we're placing a letter there
+                    if (m == i)
+                    {
+                        bad = false;
+                        break;
+                    }
+                }
+
+                if (bad)
+                {
+                    pairingSeen[j] = pairingSeen[pairingSeen.size() - 1];
+                    pairingSeen.resize(pairingSeen.size() - 1);
+                }
+                else
+                {
+                    j++;
+                }
+            }
+        }
+    }
+}
+
 std::string State::getGuess()
 {
     string next;
@@ -172,10 +210,27 @@ std::string State::getGuess()
         }
     }
 
+    // the available letters for the positions not used by the placement are looked-up before the placement.
+    // that way we can avoid placement that would leave a position with no possibilities
+    vector<vector<char>> pickLetters(Size);
+    for(int i = 0; i < Size; i++)
+    {
+        // for unplaced letters
+        // pick a letter that could still go here. (not previously yellow in this column nor grey in any columns except if other yellow present)
+        for(int j = 0; j < Letters; j++)
+        {
+            if (placesForLetter[j].find(i) != placesForLetter[j].end() && nonFreeLetters.find(j) == nonFreeLetters.end()) // todo: where we check for free letters
+            {
+                pickLetters[i].push_back('A' + j);
+            }
+        }
+    }
+
+
     // find a way the yellow letters could be arranged
     solve(pairings);
 
-    filterPairings();
+    filterPairings(pickLetters);
 
     set<string> nexts;
 
@@ -213,25 +268,9 @@ std::string State::getGuess()
 
     for(int i = 0; i < Size; i++)
     {
-        // for unplaced letters
         if (next[i] == '.')
         {
-            // pick a letter that could still go here. (not previously yellow in this column nor grey in any columns except if other yellow present)
-            vector<char> pickLetters;
-            for(int j = 0; j < Letters; j++)
-            {
-                if (placesForLetter[j].find(i) != placesForLetter[j].end() && nonFreeLetters.find(j) == nonFreeLetters.end()) // todo: where we check for free letters
-                {
-                    pickLetters.push_back('A' + j);
-                }
-            }
-
-            if (pickLetters.size() == 0)
-            {
-                throw(0);
-            }
-
-            next[i] = pickLetters[rng.random(pickLetters.size())];
+            next[i] = pickLetters[i][rng.random(pickLetters[i].size())];
         }
     }
 
