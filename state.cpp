@@ -84,7 +84,7 @@ void State::tell(vector<Match> matchesFound)
             else
             {
                 // there's a yellow of this letter, but it is grey here. So it might go elsewhere **for placement**
-                placesForLetter[guess[i] - 'A'].erase(i); // todo: only for one type of placement. We need to stil restrict it for free letters
+                placesForLetter[guess[i] - 'A'].erase(i);
                 nonFreeLetters.insert(guess[i] - 'A');
             }
         }
@@ -203,7 +203,7 @@ std::string State::getGuess()
     {
         if (matches[ii] == yellow)
         {
-            for(auto p: placesForLetter[guess[ii] - 'A']) // todo: where we check for yellow letters moving
+            for(auto p: placesForLetter[guess[ii] - 'A'])
             {
                 pairings[ii * Size + p] = true;
             }
@@ -219,7 +219,7 @@ std::string State::getGuess()
         // pick a letter that could still go here. (not previously yellow in this column nor grey in any columns except if other yellow present)
         for(int j = 0; j < Letters; j++)
         {
-            if (placesForLetter[j].find(i) != placesForLetter[j].end() && nonFreeLetters.find(j) == nonFreeLetters.end()) // todo: where we check for free letters
+            if (placesForLetter[j].find(i) != placesForLetter[j].end() && nonFreeLetters.find(j) == nonFreeLetters.end())
             {
                 pickLetters[i].push_back('A' + j);
             }
