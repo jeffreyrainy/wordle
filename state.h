@@ -48,7 +48,8 @@ protected:
     string guess;
     string intermediate;
     vector<Match> matches;
-    set<int> placesForLetter[MaxLetters];
+    set<int> placesForLetter[MaxLetters]; // which letters can still be placed where
+    set<int> nonFreeLetters; // letters which cannot be placed outside of placement (because a grey and yellow were seen together)
     vector<int> pairing;
     vector<vector<int>> pairingSeen;
     RNG& rng;

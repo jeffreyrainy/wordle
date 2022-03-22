@@ -22,6 +22,18 @@ ostream& operator<<(ostream& out, const State& s)
     out << "\x1b[33;0m";
     out << endl;
 
+/*    for(int l=0; l < s.Letters; l++)
+    {
+        out << (char)('A' + l) << ": ";
+        for(auto p: s.placesForLetter[l])
+        {
+            out << p << " ";
+        }
+        out << " ";
+    }
+    out << endl;
+*/
+
     return out;
 }
 
@@ -71,8 +83,9 @@ void State::tell(vector<Match> matchesFound)
             }
             else
             {
-                // there's a yellow of this letter, but it is grey here. So it might go elsewhere
-                placesForLetter[guess[i] - 'A'].erase(i);
+                // there's a yellow of this letter, but it is grey here. So it might go elsewhere **for placement**
+                placesForLetter[guess[i] - 'A'].erase(i); // todo: only for one type of placement. We need to stil restrict it for free letters
+                nonFreeLetters.insert(guess[i] - 'A');
             }
         }
     }
@@ -152,7 +165,7 @@ std::string State::getGuess()
     {
         if (matches[ii] == yellow)
         {
-            for(auto p: placesForLetter[guess[ii] - 'A'])
+            for(auto p: placesForLetter[guess[ii] - 'A']) // todo: where we check for yellow letters moving
             {
                 pairings[ii * Size + p] = true;
             }
@@ -207,10 +220,15 @@ std::string State::getGuess()
             vector<char> pickLetters;
             for(int j = 0; j < Letters; j++)
             {
-                if (placesForLetter[j].find(i) != placesForLetter[j].end())
+                if (placesForLetter[j].find(i) != placesForLetter[j].end() && nonFreeLetters.find(j) == nonFreeLetters.end()) // todo: where we check for free letters
                 {
                     pickLetters.push_back('A' + j);
                 }
+            }
+
+            if (pickLetters.size() == 0)
+            {
+                throw(0);
             }
 
             next[i] = pickLetters[rng.random(pickLetters.size())];

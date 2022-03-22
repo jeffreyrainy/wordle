@@ -1,5 +1,7 @@
 #pragma once
 
+#include <random>
+
 class RNG
 {
 public:
@@ -11,4 +13,7 @@ private:
     int c;
     int modulus;
     int seed;
+
+    std::random_device dev;
+    std::mt19937 rng{dev()};
 };

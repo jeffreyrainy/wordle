@@ -1,5 +1,4 @@
 #include "state.h"
-#include "scenariostate.h"
 #include "rng.h"
 
 RNG r(8693, 9749, 19471, 23767);
@@ -59,13 +58,12 @@ int main(int argc, char* argv[])
     vector<string> guesses;
     map<string,int> firstWords;
     map<int, int> instances;
-    bool scenario = false;
 
     for(int i = 1; i < argc; i++)
     {
         if (argv[i] == (string)"--help")
         {
-            cout << argv[0] << " [verbose] [-l letters] [-s size] [scenario solution guess1 guess2 ...]" << endl;
+            cout << argv[0] << " [verbose] [-l letters] [-s size]" << endl;
             return 0;
         }
         else if (argv[i] == (string)"verbose")
@@ -84,27 +82,6 @@ int main(int argc, char* argv[])
         {
             next = 1;
         }
-        else if (argv[i] == (string)"scenario")
-        {
-            scenario = true;
-            i++;
-            solution = argv[i++];
-
-            for(auto& c:solution)
-            {
-                c = toupper(c);
-            }
-
-            while(i < argc)
-            {
-                string guess = argv[i++];
-                for(auto& c:guess)
-                {
-                    c = toupper(c);
-                }
-                guesses.push_back(guess);
-            }
-        }
         else
         {
             if (next == 0)
@@ -119,25 +96,27 @@ int main(int argc, char* argv[])
         }
     }
 
-    while(count <= 2500000)
+    while(count <= 10000000)
     {
         int moves = 0;
-        State* s = scenario ? new ScenarioState(size, letters, r) : new State(size, letters, r);
+        State* s = new State(size, letters, r);
         string guess;
 
         solution.resize(size);
 
-        // if we're not playing a specific scenario, pick a random solution
-        if (!scenario)
+        try
         {
+
             for(int i = 0; i < size; i++)
             {
                 solution[i] = r.random(letters) + 'A';
             }
+
             if (trace)
             {
                 cout << "target " << solution << endl;
             }
+
             if (verbose)
             {
                 cout << "=====" << endl;
@@ -164,33 +143,9 @@ int main(int argc, char* argv[])
                 moves++;
             }
         }
-        else
+        catch(...)
         {
-            while(solution != guess)
-            {
-                if (moves < guesses.size())
-                {
-                    s->suggest(guesses[moves]);
-                }
-                else
-                {
-                    s->suggest("");
-                }
-
-                guess = s->getGuess();
-                s->tell(match(guess, solution));
-
-                if (moves == guesses.size())
-                {
-                    firstWords[guess]++;
-                }
-
-                if (verbose)
-                {
-                    cout << *s;
-                }
-                moves++;
-            }
+            continue;
         }
 
         if (verbose)
@@ -218,14 +173,6 @@ int main(int argc, char* argv[])
             for(auto it:instances)
             {
                 cout << it.first << " guesses: " << std::setprecision(8) << it.second << endl;
-            }
-
-            if (scenario)
-            {
-                for(auto it:firstWords)
-                {
-                    cout << it.first << " " << (double)it.second / count << endl;
-                }
             }
         }
 
