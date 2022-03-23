@@ -89,6 +89,20 @@ void State::tell(vector<Match> matchesFound)
             }
         }
     }
+
+    for(auto it = nonFreeLetters.begin(); it != nonFreeLetters.end(); )
+    {
+        if (yellows.find((*it) + 'A') == yellows.end())
+        {
+            placesForLetter[(*it)].clear();
+            it = nonFreeLetters.erase(it);
+        }
+        else
+        {
+            it++;
+        }
+    }
+
 }
 
 // recursively try the various way the yellow letters can go over available spots

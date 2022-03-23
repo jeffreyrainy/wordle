@@ -1,4 +1,4 @@
-#include "state.h"
+#include "simplifystate.h"
 #include "rng.h"
 
 RNG r(8693, 9749, 19471, 23767);
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
     while(count <= 10000000)
     {
         int moves = 0;
-        State* s = new State(size, letters, r);
+        SimplifyState* s = new SimplifyState(size, letters, r);
         string guess;
 
         solution.resize(size);
@@ -121,6 +121,10 @@ int main(int argc, char* argv[])
             cout << "=====" << endl;
         }
 
+        if (verbose)
+        {
+            cout << "State is: " << s->description(solution) << endl;
+        }
         while(solution != guess)
         {
             guess = s->getGuess();
@@ -138,6 +142,11 @@ int main(int argc, char* argv[])
                 cout << *s;
             }
             moves++;
+
+            if (verbose)
+            {
+                cout << "State is: " << s->description(solution) << endl;
+            }
         }
 
         if (verbose)
