@@ -5,38 +5,29 @@ using std::ostringstream;
 
 string SimplifyState::description(string solution)
 {
-    vector<int> cardinality(Size);
-    map<int, int> cardinalityMap;
-    set<char> seen;
+    map<char, int> letterCardinality;
+    map<int, int> cardinalityCount;
+
     for(int i = 0; i < Size; i++)
-    for(int j = 0; j < Size; j++)
     {
-        if (solution[i] == solution[j])
-        {
-            cardinality[i]++;
-        }
+        letterCardinality[solution[i]]++;
     }
 
-    for(int i = 0; i < Size; i++)
+    for(auto it:letterCardinality)
     {
-        if (cardinality[i] && seen.find(solution[i]) == seen.end())
+        if (it.second > 1)
         {
-            cardinalityMap[cardinality[i]]++;
-            seen.insert(solution[i]);
+            cardinalityCount[it.second]++;
         }
-
     }
 
     int count = 0;
     int yellowCount = 0;
     ostringstream oss;
 
-    for(auto it:cardinalityMap)
+    for(auto it:cardinalityCount)
     {
-        if (it.first > 1)
-        {
-            oss << it.second << " solution letters are there " << it.first << " times. ";
-        }
+        oss << it.second << " solution letters present " << it.first << " times. ";
     }
 
     for(int i = 0; i < Size; i++)
